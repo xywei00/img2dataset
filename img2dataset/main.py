@@ -163,6 +163,15 @@ def download(
             existing_shards = [int(x.split("/")[-1].split("_")[0]) for x in fs.glob(output_path + "/*.json")]
             start_shard_id = max(existing_shards, default=-1) + 1
             done_shards = set()
+        elif incremental_mode == "extend_incremental":
+            # in order to determine the starting shard number, the extended dataset should be in a separate
+            # fold from the original dataset, and it should contain the .json file of the last shard in the
+            # original dataset. For example, if the original dataset stops at 00019245.tar, then the
+            # (unfinished) extended dataset should contain 00019245_stats.json and its data should start with
+            # 00019246.tar.
+            existing_shards = [int(x.split("/")[-1].split("_")[0]) for x in fs.glob(output_path + "/*.json")]
+            start_shard_id = min(existing_shards, default=-1) + 1
+            done_shards = set(int(x.split("/")[-1].split("_")[0]) for x in fs.glob(output_path + "/*.json"))
         else:
             raise ValueError(f"Unknown incremental mode {incremental_mode}")
 
