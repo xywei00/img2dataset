@@ -108,6 +108,10 @@ def download(
     max_shard_retry: int = 1,
     user_agent_token: Optional[str] = None,
     disallowed_header_directives: Optional[List[str]] = None,
+    all_start_shard_id: int = -1,
+    all_end_shard_id: int = -1,
+    cur_start_shard_id: int = -1,
+    cur_num_shards: int = -1,
 ):
     """Download is the main entry point of img2dataset, it uses multiple processes and download multiple files"""
     if disallowed_header_directives is None:
@@ -174,6 +178,15 @@ def download(
             done_shards = set(int(x.split("/")[-1].split("_")[0]) for x in fs.glob(output_path + "/*.json"))
         else:
             raise ValueError(f"Unknown incremental mode {incremental_mode}")
+
+    if all_start_shard_id > 0:
+        assert all_end_shard_id > all_start_shard_id and cur_start_shard_id > all_start_shard_id \
+            and cur_num_shards > 0
+        # NOTE if all_start_shard_id is set, start_shard_id will be overwritten
+        start_shard_id = all_start_shard_id
+        existing_shards = [int(x.split("/")[-1].split("_")[0]) for x in fs.glob(output_path + "/*.json")]
+        done_shards = existing_shards + list(range(start_shard_id, cur_start_shard_id)) + list(range(cur_start_shard_id+cur_num_shards, all_end_shard_id+1))
+        done_shards = set(done_shards)
 
     logger_process.done_shards = done_shards
     logger_process.start()
