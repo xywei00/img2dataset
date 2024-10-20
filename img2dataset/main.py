@@ -139,10 +139,10 @@ def download(
         fs.mkdir(tmp_dir)
 
     def signal_handler(signal_arg, frame):  # pylint: disable=unused-argument
-        try:
-            fs.rm(tmp_dir, recursive=True)
-        except Exception as _:  # pylint: disable=broad-except
-            pass
+        # try:
+        #     fs.rm(tmp_dir, recursive=True)
+        # except Exception as _:  # pylint: disable=broad-except
+        #     pass
         logger_process.terminate()
         sys.exit(0)
 
@@ -290,8 +290,8 @@ def download(
     )
     logger_process.join()
 
-    if not hasattr(fs, "s3"):
-        fs.rm(tmp_dir, recursive=True)
+    # if not hasattr(fs, "s3"):
+    #     fs.rm(tmp_dir, recursive=True)
 
 
 def main():
