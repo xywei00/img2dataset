@@ -180,7 +180,7 @@ def download(
             raise ValueError(f"Unknown incremental mode {incremental_mode}")
 
     if all_start_shard_id > 0:
-        assert all_end_shard_id > all_start_shard_id and cur_start_shard_id > all_start_shard_id \
+        assert all_end_shard_id > all_start_shard_id and cur_start_shard_id >= all_start_shard_id \
             and cur_num_shards > 0
         # NOTE if all_start_shard_id is set, start_shard_id will be overwritten
         start_shard_id = all_start_shard_id
